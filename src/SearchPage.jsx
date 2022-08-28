@@ -40,14 +40,14 @@ var rarity = ["", "SSR", "SR", "R"];
 var buddyEffectIdPrefix = 'buddyEffect';
 var spellEffectIdPrefix = 'spellEffect';
 
-const duoCards = cards.filter(card => card.duo != undefined);
+const duoCards = cards.filter(card => card.duo !== undefined);
 const mutualDuos = duoCards.map((card) => {
-    var mutualDuos = duoCards.filter(searchCard => card.duo == searchCard.name && searchCard.duo == card.name);
+    var mutualDuos = duoCards.filter(searchCard => card.duo === searchCard.name && searchCard.duo === card.name);
     return {
         card,
         mutualDuos
     }
-}).filter(duos => duos.mutualDuos != undefined && duos.mutualDuos.length > 0);
+}).filter(duos => duos.mutualDuos !== undefined && duos.mutualDuos.length > 0);
 
 const spellColumn = (spell) => {
     return (
@@ -161,7 +161,7 @@ const filterSection = (values, onChangeHandler) => {
 
 const checkFilterValue = (id, cardValue, values) => {
     var formikVal = getIn(values, id);
-    if ((formikVal != '' && formikVal != undefined)  && cardValue != formikVal) {
+    if ((formikVal !== '' && formikVal !== undefined)  && cardValue !== formikVal) {
         return false;
     }
     
@@ -173,10 +173,10 @@ const checkCheckboxGroupFilterValue = (idPrefix, option, cardValue, values) => {
     var isChecked = getIn(values, id);
     if (isChecked) {
         if (Array.isArray(cardValue)) {
-            return cardValue.indexOf(option) != -1;
+            return cardValue.indexOf(option) !== -1;
         }
         else {
-            return cardValue == option;
+            return cardValue === option;
         }
     }
 
@@ -185,10 +185,10 @@ const checkCheckboxGroupFilterValue = (idPrefix, option, cardValue, values) => {
 
 const evaluateValueMatch = (option, cardValue) => {
     if (Array.isArray(cardValue)) {
-        return cardValue.indexOf(option) != -1;
+        return cardValue.indexOf(option) !== -1;
     }
     else {
-        return cardValue == option;
+        return cardValue === option;
     }
 }
 
