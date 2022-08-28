@@ -1,0 +1,131 @@
+$padding-color: #0030ae;
+$background-color: #dff3fd;
+$filter-bg: #9db8ef;
+$table-header-bg: #4c6bde;
+$table-body-bg: #dff3fd;
+$text-color: black;
+
+body {
+    background-color: $padding-color;
+    padding: 25px;
+    height: 100vh;
+    box-sizing: border-box;
+
+    color: $text-color;
+
+    :global(#root), :global(.App) {
+        height: 100%;
+    }
+}
+
+body::after {
+  content: "";
+  background: url("https://64.media.tumblr.com/3a4e9df2f9cc3ca54fedf892e7dc6d4f/190bc024716ebf7e-36/s1280x1920/852108786621f9d830fc209fbd4d112692d37f0d.png");
+  opacity: 0.5;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: -1;   
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: $background-color;
+}
+
+.searchTable {
+    flex: 1 1 0;
+    overflow: auto;
+}
+
+form {
+    background-color: $filter-bg;
+}
+
+.filterSection {
+    display: flex;
+    flex-direction: column;
+
+    .basicFilters {
+        border-bottom: 1px solid black;
+        padding-bottom: 10px;
+
+        label {
+            align-self: flex-end;
+        }
+    }
+
+    .subFilters {
+        display: flex;
+        flex-direction: row;
+
+        > div {
+            flex: 1 1 auto;
+
+            &:not(:first-child) {
+                border-left: 1px solid black;
+            }
+        }
+    }
+
+    .filterOptions {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+
+        .filterOption {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            max-height: 200px;;
+            padding: 0 10px;
+
+            h5 {
+                width: 100%;
+            }
+
+            .filterOptionValues {
+                overflow-y: auto;
+                height: 100%;
+                display: flex;
+                align-items: flex-start;
+                flex-direction: column;
+
+                label {
+                    text-align: left;
+                }
+            }
+        }
+    }
+}
+
+table {
+    position: relative;
+    display: block;
+    flex: 0 1 100%;
+    overflow-y: auto;
+    border-collapse: collapse;
+    width: 100%;
+
+    thead {
+        position: sticky;
+        top: 0;
+
+        th {
+            background-color: $table-header-bg;
+            border-bottom: 2px solid black;
+        }
+    }
+
+    tbody {
+        background-color: $table-body-bg;
+    }
+
+        th, td {
+            padding: 10px;
+        }
+}

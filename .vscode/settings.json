@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/09a0ebe9-c813-4361-8932-1b77e0af17ed/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/twist-card-search",
+    "appService.deploySubpath": "build"
+}
