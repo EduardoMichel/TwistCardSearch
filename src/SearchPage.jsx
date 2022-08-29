@@ -17,7 +17,7 @@ var characterNames = [
     "Azul_Ashengrotto",
     "Jade_Leech",
     "Floyd_Leech",
-    "Kalim_Al",
+    "Kalim_Al-Asim",
     "Jamil_Viper",
     "Vil_Schoenheit",
     "Epel_Felmier",

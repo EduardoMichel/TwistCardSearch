@@ -109,7 +109,7 @@ table {
     flex: 0 1 100%;
     overflow-y: auto;
     border-collapse: collapse;
-    width: 100%;
+    min-width: 100%;
 
     thead {
         position: sticky;
@@ -128,4 +128,21 @@ table {
         th, td {
             padding: 10px;
         }
+}
+
+@media screen and (max-width: 950px) {
+    body {
+        height: auto;
+        overflow: scroll;
+        width: 950px;
+    }
+
+    .searchTable {
+        flex: 0 0 auto;
+    }
+
+    .filterSection .subFilters > div{
+        flex: 0 0 auto;
+    }
+
 }
