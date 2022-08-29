@@ -144,5 +144,8 @@ table {
     .filterSection .subFilters > div{
         flex: 0 0 auto;
     }
-
+    
+    .filterSection .filterOptions .filterOption {
+            max-height: auto;
+    }
 }
