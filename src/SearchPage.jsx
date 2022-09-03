@@ -3,7 +3,7 @@ import cards from './CardData';
 import { useFormik, getIn } from 'formik';
 import Style from './SearchPage.module.scss';
 import Select from '@mui/material/Select';
-import { Checkbox, Drawer, Fab, FormControlLabel, MenuItem } from '@mui/material';
+import { Checkbox, SwipeableDrawer, Fab, FormControlLabel, MenuItem } from '@mui/material';
 
 import { FilterList } from '@mui/icons-material';
 
@@ -11,28 +11,28 @@ const anyValue = "Any";
 const effects = ["curse", "damage cut", "damage resistance", "power drain", "hp restoration", "damage boost", "hp regen", "evasion boost", "fire boost", "flora boost", "water boost", "cosmic boost", "debuff removal", "blind immunity", "power boost", "hp boost"];
 var characterNames = [
     anyValue,
-    "Riddle_Rosehearts",
-    "Ace_Trappola",
-    "Deuce_Spade",
-    "Cater_Diamond",
-    "Trey_Clover",
-    "Leona_Kingscholar",
-    "Jack_Howl",
-    "Ruggie_Bucchi",
-    "Azul_Ashengrotto",
-    "Jade_Leech",
-    "Floyd_Leech",
-    "Kalim_Al-Asim",
-    "Jamil_Viper",
-    "Vil_Schoenheit",
-    "Epel_Felmier",
-    "Rook_Hunt",
-    "Idia_Shroud",
-    "Ortho_Shroud",
-    "Malleus_Draconia",
-    "Sebek_Zigvolt",
+    "Riddle Rosehearts",
+    "Ace Trappola",
+    "Deuce Spade",
+    "Cater Diamond",
+    "Trey Clover",
+    "Leona Kingscholar",
+    "Jack Howl",
+    "Ruggie Bucchi",
+    "Azul Ashengrotto",
+    "Jade Leech",
+    "Floyd Leech",
+    "Kalim Al-Asim",
+    "Jamil Viper",
+    "Vil Schoenheit",
+    "Epel Felmier",
+    "Rook Hunt",
+    "Idia Shroud",
+    "Ortho Shroud",
+    "Malleus Draconia",
+    "Sebek Zigvolt",
     "Silver",
-    "Lilia_Vanrouge",
+    "Lilia Vanrouge",
 ];
 
 var combatTypes = [
@@ -321,15 +321,16 @@ const SearchPage = () => {
 
     return (
             <div className={Style.container}>
-                <Drawer 
+                <SwipeableDrawer 
                     className={Style.Drawer}
                     anchor="left" open={formik.values.displayToggleFilter} 
+                    onOpen={() => { toggleFilterDrawer(!formik.values.displayToggleFilter, formik.setFieldValue)}}
                     onClose={() => { toggleFilterDrawer(!formik.values.displayToggleFilter, formik.setFieldValue)}}
                 >
                     <form>
                         {filterSection(formik.values, formik.handleChange)}
                     </form>
-                </Drawer>
+                </SwipeableDrawer>
                 <table className={Style.searchTable}>
                     <thead>
                         <tr>

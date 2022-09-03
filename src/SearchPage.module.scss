@@ -30,6 +30,9 @@ body::after {
 
 .container {
     background-color: $background-color;
+    height: 100vh;
+    width: 100vw;
+    overflow: auto;
 }
 
 .searchTable {
@@ -120,20 +123,6 @@ table {
 
 .filterBtn {
     display: None;
-}
-
-@media screen and (max-width: 950px) {
-    body {
-        padding: 0;
-    }
-
-    .searchTable {
-        flex: 0 0 auto;
-    }
-
-    .filterSection .subFilters > div{
-        flex: 0 0 auto;
-    }
 }
 
 .teamFab {
