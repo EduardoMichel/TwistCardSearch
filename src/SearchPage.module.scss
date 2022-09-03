@@ -8,14 +8,9 @@ $text-color: black;
 body {
     background-color: $padding-color;
     padding: 25px;
-    height: 100vh;
     box-sizing: border-box;
-
+    overflow: auto;
     color: $text-color;
-
-    :global(#root), :global(.App) {
-        height: 100%;
-    }
 }
 
 body::after {
@@ -27,23 +22,23 @@ body::after {
   bottom: 0;
   right: 0;
   position: absolute;
-  z-index: -1;   
+  z-index: -1;
+  overflow: auto;
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
     background-color: $background-color;
 }
 
 .searchTable {
     flex: 1 1 0;
-    overflow: auto;
 }
 
 form {
     background-color: $filter-bg;
+    min-height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .filterSection {
@@ -51,12 +46,7 @@ form {
     flex-direction: column;
 
     .basicFilters {
-        border-bottom: 1px solid black;
         padding-bottom: 10px;
-
-        label {
-            align-self: flex-end;
-        }
     }
 
     .subFilters {
@@ -65,10 +55,6 @@ form {
 
         > div {
             flex: 1 1 auto;
-
-            &:not(:first-child) {
-                border-left: 1px solid black;
-            }
         }
     }
 
@@ -76,12 +62,12 @@ form {
         display: flex;
         flex-direction: row;
         align-items: stretch;
+        flex-wrap: wrap;
 
         .filterOption {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            max-height: 200px;;
             padding: 0 10px;
 
             h5 {
@@ -89,7 +75,7 @@ form {
             }
 
             .filterOptionValues {
-                overflow-y: auto;
+                overflow: visible;
                 height: 100%;
                 display: flex;
                 align-items: flex-start;
@@ -107,7 +93,6 @@ table {
     position: relative;
     display: block;
     flex: 0 1 100%;
-    overflow-y: auto;
     border-collapse: collapse;
     min-width: 100%;
 
@@ -126,15 +111,17 @@ table {
     }
 
         th, td {
-            padding: 10px;
+            padding: 10px 5px;
         }
+}
+
+.filterBtn {
+    display: None;
 }
 
 @media screen and (max-width: 950px) {
     body {
-        height: auto;
-        overflow: scroll;
-        width: 950px;
+        padding: 0;
     }
 
     .searchTable {
@@ -144,8 +131,28 @@ table {
     .filterSection .subFilters > div{
         flex: 0 0 auto;
     }
-    
-    .filterSection .filterOptions .filterOption {
-            max-height: 900px;
-    }
+}
+
+.teamFab {
+    position: fixed !important;
+    right: 16px;
+    bottom: 80px;
+}
+
+.filterFab {
+    position: fixed !important;
+    right: 16px;
+    bottom: 16px;
+}
+
+:global(.MuiSelect-select) {
+    min-width: 125px !important;
+}
+
+:global(.MuiDrawer-paper) {
+    max-width: calc(100% - 50px);
+}
+
+.dropdownItem {
+    min-height: 36px !important;
 }

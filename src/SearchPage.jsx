@@ -2,10 +2,15 @@ import React from 'react';
 import cards from './CardData';
 import { useFormik, getIn } from 'formik';
 import Style from './SearchPage.module.scss';
+import Select from '@mui/material/Select';
+import { Checkbox, Drawer, Fab, FormControlLabel, MenuItem } from '@mui/material';
 
+import { FilterList } from '@mui/icons-material';
+
+const anyValue = "Any";
 const effects = ["curse", "damage cut", "damage resistance", "power drain", "hp restoration", "damage boost", "hp regen", "evasion boost", "fire boost", "flora boost", "water boost", "cosmic boost", "debuff removal", "blind immunity", "power boost", "hp boost"];
 var characterNames = [
-    "",
+    anyValue,
     "Riddle_Rosehearts",
     "Ace_Trappola",
     "Deuce_Spade",
@@ -30,12 +35,18 @@ var characterNames = [
     "Lilia_Vanrouge",
 ];
 
+var combatTypes = [
+    "Attack",
+    "Defense",
+    "Balanced"
+];
+
 var elements = ["Fire", "Flora", "Cosmic", "Water"];
 var strengthLevels = ["major", "minor", "modest"];
 var buddyEffects = ["power boost", "hp boost"];
 var targets = ["caster", "allies", "foe"];
 var turns = ["1", "2", "3"];
-var rarity = ["", "SSR", "SR", "R"];
+var rarity = [anyValue, "SSR", "SR", "R"];
 
 var buddyEffectIdPrefix = 'buddyEffect';
 var spellEffectIdPrefix = 'spellEffect';
@@ -60,7 +71,7 @@ const spellColumn = (spell) => {
 
 const buddyColumn = (buddy) => {
     return (
-        <td>
+        <td key={buddy.name}>
             <div>
                 <h4>{buddy.name}</h4>
                 <div>{buddy.desc}</div>
@@ -71,9 +82,11 @@ const buddyColumn = (buddy) => {
 
 const row = (card) => {
     return (
-        <tr>
-            <td>{card.name}</td>
-            <td>{card.desc}</td>
+        <tr key={card.name + card.desc}>
+            <td>
+                <div>{card.name}</div>
+                <div>{card.desc}</div>
+            </td>
             <td>{card.combatType}</td>
             <td>{spellColumn(card.spells[0])}</td>
             <td>{spellColumn(card.spells[1])}</td>
@@ -84,30 +97,34 @@ const row = (card) => {
 };
 
 function createFilterElement(desc, element, isCheckbox) {
-    return <label>
-        {element}
-        {isCheckbox && desc}
-    </label>;
+    return element;
 };
 
 function createDropdownElement(id, desc, options, onChangeHandler, values) {
-    var select = <select value={values[id]} id={id} name={id} onChange={onChangeHandler} >
+    var select = <Select
+        value={values[id] || anyValue} 
+        id={id}
+        name={id}
+        onChange={onChangeHandler}
+    >
         {options.map(option => {
-            return <option value={option}>{option}</option>
+            return <MenuItem className={Style.dropdownItem} key={option} value={option}>{option}</MenuItem>
         })}
-    </select>;
+    </Select>
 
     return createFilterElement(desc, select, false);
 }
 
-function createCheckbox(id, onChangeHandler, values) {
-    return <input type="checkbox" id={id} name={id} value={values[id]} onChange={onChangeHandler} />;
+function createCheckbox(id, option, onChangeHandler, values) {
+    var value = getIn(values, id) || false;
+    var checkbox = <Checkbox id={id} name={id} checked={value} onChange={onChangeHandler} value={value} />;
+    return <FormControlLabel label={option} control={checkbox}></FormControlLabel>;
 }
 
 function createCheckboxGroup(idPrefix, options, onChangeHandler, values) {
     return options.map(option => {
-        var checkbox = createCheckbox(idPrefix + "[" + option.replace(" ", "") + "]", onChangeHandler, values);
-        return createFilterElement(option, checkbox, true);
+        var checkbox = createCheckbox(idPrefix + "." + option.replace(" ", ""), option, onChangeHandler, values);
+        return createFilterElement(option, checkbox, false);
     })
 }
 
@@ -125,43 +142,41 @@ function createFilterAttributeSection(id, desc, options, isDropdown, onChangeHan
 
 const filterSection = (values, onChangeHandler) => {
     return (
-        <div class={Style.filterSection}>
+        <div className={Style.filterSection}>
             <div className={Style.basicFilters}>
-                {createFilterElement('Cards With Mutual Duos', createCheckbox('mutualDuos', onChangeHandler, values), true)}
-                <div class={Style.filterOptions}>
+                {createFilterElement('Cards With Mutual Duos', createCheckbox('mutualDuos', 'Cards With Mutual Duos', onChangeHandler, values), true)}
+                <div className={Style.filterOptions}>
                     {createFilterAttributeSection('characterName', 'Character', characterNames, true, onChangeHandler, values)}
                     {createFilterAttributeSection('rarity', 'Rarity', rarity, true, onChangeHandler, values)}
+                    {createFilterAttributeSection('combatType', 'Combat Type', combatTypes, false, onChangeHandler, values)}
                     {createFilterAttributeSection('duoBuddy', 'Duo Buddy', characterNames, true, onChangeHandler, values)}
-                    {createFilterElement('Show Advanced Options', createCheckbox('showAdvancedOptions', onChangeHandler, values), true)}
                 </div>
             </div>
-            { values.showAdvancedOptions && <div className={Style.subFilters}>
-                <div className={Style.buddyFilters}>
-                    <h4>Buddy Effects</h4>
-                    <div class={Style.filterOptions}>
-                        {createFilterAttributeSection('buddy', 'Name', characterNames, true, onChangeHandler, values)}
-                        {createFilterAttributeSection(buddyEffectIdPrefix, 'Effect', buddyEffects, false, onChangeHandler, values)}
-                        {createFilterAttributeSection(buddyEffectIdPrefix, 'Strength', strengthLevels, false, onChangeHandler, values)}
-                    </div>
+            <div className={Style.buddyFilters}>
+                <h3>Buddy Effects</h3>
+                <div className={Style.filterOptions}>
+                    {createFilterAttributeSection('buddy', 'Name', characterNames, true, onChangeHandler, values)}
+                    {createFilterAttributeSection(buddyEffectIdPrefix, 'Effect', buddyEffects, false, onChangeHandler, values)}
+                    {createFilterAttributeSection(buddyEffectIdPrefix, 'Strength', strengthLevels, false, onChangeHandler, values)}
                 </div>
-                <div className={Style.spellFilters}>
-                    <h4>Spell Effects</h4>
-                    <div class={Style.filterOptions}>
-                        {createFilterAttributeSection(spellEffectIdPrefix, 'Effect', effects, false, onChangeHandler, values)}
-                        {createFilterAttributeSection(spellEffectIdPrefix, 'Strength', strengthLevels, false, onChangeHandler, values)}
-                        {createFilterAttributeSection(spellEffectIdPrefix, 'Turns', turns, false, onChangeHandler, values)}
-                        {createFilterAttributeSection(spellEffectIdPrefix, 'Targets', targets, false, onChangeHandler, values)}
-                        {createFilterAttributeSection(spellEffectIdPrefix, 'Element', elements, false, onChangeHandler, values)}
-                    </div>
+            </div>
+            <div className={Style.spellFilters}>
+                <h3>Spell Effects</h3>
+                <div className={Style.filterOptions}>
+                    {createFilterAttributeSection(spellEffectIdPrefix, 'Effect', effects, false, onChangeHandler, values)}
+                    {createFilterAttributeSection(spellEffectIdPrefix, 'Strength', strengthLevels, false, onChangeHandler, values)}
+                    {createFilterAttributeSection(spellEffectIdPrefix, 'Turns', turns, false, onChangeHandler, values)}
+                    {createFilterAttributeSection(spellEffectIdPrefix, 'Targets', targets, false, onChangeHandler, values)}
+                    {createFilterAttributeSection(spellEffectIdPrefix, 'Element', elements, false, onChangeHandler, values)}
                 </div>
-            </div>}
+            </div>
         </div>
     );
 };
 
 const checkFilterValue = (id, cardValue, values) => {
     var formikVal = getIn(values, id);
-    if ((formikVal !== '' && formikVal !== undefined)  && cardValue !== formikVal) {
+    if ((formikVal !== anyValue && formikVal !== undefined)  && cardValue !== formikVal) {
         return false;
     }
     
@@ -169,7 +184,7 @@ const checkFilterValue = (id, cardValue, values) => {
 }
 
 const checkCheckboxGroupFilterValue = (idPrefix, option, cardValue, values) => {
-    var id = idPrefix + "[" + option.replace(" ", "") + "]";
+    var id = idPrefix + "." + option.replace(" ", "");
     var isChecked = getIn(values, id);
     if (isChecked) {
         if (Array.isArray(cardValue)) {
@@ -198,7 +213,7 @@ const evaluateCheckboxGroupFilterValue = (idPrefix, baseId, options, cardValue, 
 
     options.forEach(option => {
         var id = idPrefix + "[" + option.replace(" ", "") + "]";
-        var isChecked = getIn(values, id);
+        var isChecked = isCheckboxChecked(id, values);
         if (!isChecked) {
             return;
         }
@@ -219,11 +234,16 @@ const evaluateCheckboxGroupFilterValue = (idPrefix, baseId, options, cardValue, 
     return allUnchecked || pass;
 }
 
+const isCheckboxChecked = (id, values) => {
+    return getIn(values, id) || false;
+}
+
 const cardMatchesFilter = (card, values) => {
     var result = 
         checkFilterValue('characterName', card.name, values)
         && checkFilterValue('rarity', card.rarity, values)
         && checkFilterValue('duoBuddy', card.duo, values)
+        && evaluateCheckboxGroupFilterValue('combatType', 'combatType', combatTypes, card.combatType, values)
     ;
 
     if (!result) {
@@ -280,16 +300,20 @@ const cardMatchesFilter = (card, values) => {
 
 const filterCards = (cards, values) => {
     var searchCards = cards;
-    if (values.mutualDuos) {
+    if (isCheckboxChecked('mutualDuos', values)) {
         searchCards = mutualDuos.map(duo => duo.card);
     }
 
     return searchCards.filter(card => cardMatchesFilter(card, values));
 }
 
+const toggleFilterDrawer = (toggle, setFieldValue) => {
+    setFieldValue('displayToggleFilter', toggle);
+}
+
 const SearchPage = () => {
     const formik = useFormik({
-        initialValues: {}
+        initialValues: {},
     });
 
 
@@ -297,26 +321,42 @@ const SearchPage = () => {
 
     return (
             <div className={Style.container}>
-                <form>
-                    {filterSection(formik.values, formik.handleChange)}
-                    <hr></hr>
-                </form>
+                <Drawer 
+                    className={Style.Drawer}
+                    anchor="left" open={formik.values.displayToggleFilter} 
+                    onClose={() => { toggleFilterDrawer(!formik.values.displayToggleFilter, formik.setFieldValue)}}
+                >
+                    <form>
+                        {filterSection(formik.values, formik.handleChange)}
+                    </form>
+                </Drawer>
                 <table className={Style.searchTable}>
                     <thead>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Combat Type</th>
-                        <th>Spell 1</th>
-                        <th>Spell 2</th>
-                        <th>DUO</th>
-                        <th>Buddy 1</th>
-                        <th>Buddy 2</th>
-                        <th>Buddy 3</th>
+                        <tr>
+                            <th>Name</th>
+                            <th>Combat Type</th>
+                            <th>Spell 1</th>
+                            <th>Spell 2</th>
+                            <th>DUO</th>
+                            <th>Buddy 1</th>
+                            <th>Buddy 2</th>
+                            <th>Buddy 3</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {filteredCards.map((card) => row(card))}
                     </tbody>
                 </table>
+                
+                <Fab 
+                    className={Style.filterFab}
+                    color="secondary" 
+                    aria-label="filter" 
+                    onClick={() => toggleFilterDrawer(!formik.values.displayToggleFilter, formik.setFieldValue)} 
+                    variant="temporary" 
+                    >
+                    <FilterList />
+                </Fab>
             </div>
     );
 }
