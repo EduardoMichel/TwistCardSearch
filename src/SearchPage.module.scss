@@ -7,10 +7,12 @@ $text-color: black;
 
 body {
     background-color: $padding-color;
-    padding: 25px;
     box-sizing: border-box;
     overflow: auto;
     color: $text-color;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
 }
 
 body::after {
@@ -39,6 +41,7 @@ form {
     min-height: 100%;
     padding: 10px;
     box-sizing: border-box;
+    flex: 1 0 auto;
 }
 
 .filterSection {
