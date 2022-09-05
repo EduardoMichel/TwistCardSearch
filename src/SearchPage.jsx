@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import cards from './CardData';
 import { useFormik, getIn } from 'formik';
 import Style from './SearchPage.module.scss';
-import Select from '@mui/material/Select';
-import { Checkbox, SwipeableDrawer, Fab, FormControlLabel, MenuItem } from '@mui/material';
-
+import { SwipeableDrawer, Fab, Select, MenuItem, Checkbox, FormControlLabel } from '@mui/material';
 import { FilterList } from '@mui/icons-material';
+import CardTable from './Components/cardTable';
 
 const anyValue = "Any";
 const effects = ["curse", "damage cut", "damage resistance", "power drain", "hp restoration", "damage boost", "hp regen", "evasion boost", "fire boost", "flora boost", "water boost", "cosmic boost", "debuff removal", "blind immunity", "power boost", "hp boost"];
@@ -59,42 +58,6 @@ const mutualDuos = duoCards.map((card) => {
         mutualDuos
     }
 }).filter(duos => duos.mutualDuos !== undefined && duos.mutualDuos.length > 0);
-
-const spellColumn = (spell) => {
-    return (
-        <div>
-            <h4>{spell.name}</h4>
-            <div>{spell.desc}</div>
-        </div>
-    );
-}
-
-const buddyColumn = (buddy) => {
-    return (
-        <td key={buddy.name}>
-            <div>
-                <h4>{buddy.name}</h4>
-                <div>{buddy.desc}</div>
-            </div>
-        </td>
-    );
-}
-
-const row = (card) => {
-    return (
-        <tr key={card.name + card.desc}>
-            <td>
-                <div>{card.name}</div>
-                <div>{card.desc}</div>
-            </td>
-            <td>{card.combatType}</td>
-            <td>{spellColumn(card.spells[0])}</td>
-            <td>{spellColumn(card.spells[1])}</td>
-            <td>{card.duo}</td>
-            {card.buddies.map(buddy => buddyColumn(buddy))}
-        </tr>
-    );
-};
 
 function createFilterElement(desc, element, isCheckbox) {
     return element;
@@ -173,6 +136,10 @@ const filterSection = (values, onChangeHandler) => {
         </div>
     );
 };
+
+const toggleFilterDrawer = (toggle, setFieldValue) => {
+    setFieldValue('displayToggleFilter', toggle);
+}
 
 const checkFilterValue = (id, cardValue, values) => {
     var formikVal = getIn(values, id);
@@ -315,19 +282,18 @@ const filterCards = (cards, values) => {
     return searchCards.filter(card => cardMatchesFilter(card, values));
 }
 
-const toggleFilterDrawer = (toggle, setFieldValue) => {
-    setFieldValue('displayToggleFilter', toggle);
-}
-
 const SearchPage = () => {
     const formik = useFormik({
         initialValues: {},
     });
 
+    const [ filteredCards, setFilteredCards ] = useState([]);
 
-    const filteredCards = filterCards(cards, formik.values);
+    const newFilteredCards = filterCards(cards, formik.values);
 
-    console.log('rerender', JSON.stringify(formik.values));
+    if (JSON.stringify(filteredCards) !== JSON.stringify(newFilteredCards)){
+        setFilteredCards(newFilteredCards);
+    }
 
     return (
             <div className={Style.container}>
@@ -342,23 +308,8 @@ const SearchPage = () => {
                         {filterSection(formik.values, formik.handleChange)}
                     </form>
                 </SwipeableDrawer>
-                <table className={Style.searchTable}>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Combat Type</th>
-                            <th>Spell 1</th>
-                            <th>Spell 2</th>
-                            <th>DUO</th>
-                            <th>Buddy 1</th>
-                            <th>Buddy 2</th>
-                            <th>Buddy 3</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredCards.map((card) => row(card))}
-                    </tbody>
-                </table>
+
+                <CardTable key={'cardTable'} filteredCards={filteredCards} /> 
                 
                 <Fab 
                     className={Style.filterFab}
