@@ -1,8 +1,8 @@
 $padding-color: #0030ae;
-$background-color: #dff3fd;
+$background-color: rgba(223, 243, 253, .5);
 $filter-bg: #9db8ef;
 $table-header-bg: #4c6bde;
-$table-body-bg: #dff3fd;
+$table-body-bg: rgba(223, 243, 253, .7);
 $text-color: black;
 
 body {
@@ -97,7 +97,6 @@ form {
 
 table {
     position: relative;
-    display: block;
     flex: 0 1 100%;
     border-collapse: collapse;
     min-width: 100%;

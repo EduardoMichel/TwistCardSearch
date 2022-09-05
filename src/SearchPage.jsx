@@ -118,7 +118,7 @@ function createDropdownElement(id, desc, options, onChangeHandler, values) {
 function createCheckbox(id, option, onChangeHandler, values) {
     var value = getIn(values, id) || false;
     var checkbox = <Checkbox id={id} name={id} checked={value} onChange={onChangeHandler} value={value} />;
-    return <FormControlLabel label={option} control={checkbox}></FormControlLabel>;
+    return <FormControlLabel key={id} label={option} control={checkbox}></FormControlLabel>;
 }
 
 function createCheckboxGroup(idPrefix, options, onChangeHandler, values) {
@@ -256,10 +256,18 @@ const cardMatchesFilter = (card, values) => {
     card.buddies.forEach(buddy => {
         var doesBuddyPass = checkFilterValue('buddy', buddy.name, values);
 
+        if (!doesBuddyPass) {
+            return;
+        }
+
         effects.forEach(effect => {
             var effectResult = checkCheckboxGroupFilterValue(buddyEffectIdPrefix, effect, buddy.effect, values);
             doesBuddyPass = doesBuddyPass && effectResult;
         });
+
+        if (!doesBuddyPass) {
+            return;
+        }
 
         strengthLevels.forEach(strengthLevel => {
             var strengthResult = checkCheckboxGroupFilterValue(buddyEffectIdPrefix, strengthLevel, buddy.strength, values);
@@ -319,11 +327,14 @@ const SearchPage = () => {
 
     const filteredCards = filterCards(cards, formik.values);
 
+    console.log('rerender', JSON.stringify(formik.values));
+
     return (
             <div className={Style.container}>
                 <SwipeableDrawer 
                     className={Style.Drawer}
-                    anchor="left" open={formik.values.displayToggleFilter} 
+                    anchor="left" 
+                    open={formik.values.displayToggleFilter || false} 
                     onOpen={() => { toggleFilterDrawer(!formik.values.displayToggleFilter, formik.setFieldValue)}}
                     onClose={() => { toggleFilterDrawer(!formik.values.displayToggleFilter, formik.setFieldValue)}}
                 >
