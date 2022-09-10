@@ -136,6 +136,10 @@ table {
     bottom: 16px;
 }
 
+:global(.MuiAutocomplete-root) {
+    min-width: 200px !important;
+}
+
 :global(.MuiSelect-select) {
     min-width: 125px !important;
 }
@@ -146,4 +150,15 @@ table {
 
 .dropdownItem {
     min-height: 36px !important;
+}
+
+.buddyContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    > div {
+        padding-right: 5px;
+        box-sizing: border-box;
+    }
 }

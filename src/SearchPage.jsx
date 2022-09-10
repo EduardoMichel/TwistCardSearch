@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import cards from './CardData';
 import { useFormik, getIn } from 'formik';
 import Style from './SearchPage.module.scss';
-import { SwipeableDrawer, Fab, Select, MenuItem, Checkbox, FormControlLabel } from '@mui/material';
+import { SwipeableDrawer, Fab, Select, MenuItem, Checkbox, FormControlLabel, TextField, Autocomplete } from '@mui/material';
 import { FilterList } from '@mui/icons-material';
 import CardTable from './Components/cardTable';
 
@@ -59,6 +59,14 @@ const mutualDuos = duoCards.map((card) => {
     }
 }).filter(duos => duos.mutualDuos !== undefined && duos.mutualDuos.length > 0);
 
+var availableStylesSet = new Set(); 
+
+cards.forEach(card => {
+    availableStylesSet.add(card.style);
+})
+
+var availableStyles = [anyValue, ...Array.from(availableStylesSet)];
+
 function createFilterElement(desc, element, isCheckbox) {
     return element;
 };
@@ -78,6 +86,13 @@ function createDropdownElement(id, desc, options, onChangeHandler, values) {
     return createFilterElement(desc, select, false);
 }
 
+function createTextbox(id, placeholder, options, onChangeHandler, setFieldValue, values) {
+    var value = getIn(values, id) || '';
+    var textboxFn = (params) => <TextField {...params} onChange={() => {}} />;
+    var autoComplete = <Autocomplete id={id} name={id} options={options} onChange={(e, value) => setFieldValue(id, value)} value={value} renderInput={textboxFn} />;
+    return autoComplete;
+}
+
 function createCheckbox(id, option, onChangeHandler, values) {
     var value = getIn(values, id) || false;
     var checkbox = <Checkbox id={id} name={id} checked={value} onChange={onChangeHandler} value={value} />;
@@ -91,25 +106,31 @@ function createCheckboxGroup(idPrefix, options, onChangeHandler, values) {
     })
 }
 
-function createFilterAttributeSection(id, desc, options, isDropdown, onChangeHandler, values) {
+function createFilterAttributeContainer(desc, element) {
     return <div className={Style.filterOption}>
         <h5>{desc}</h5>
         <div className={Style.filterOptionValues}>
-            {isDropdown ? 
-                createDropdownElement(id, desc, options, onChangeHandler, values) :
-                createCheckboxGroup(id, options, onChangeHandler, values)
-            }
+            {element}
         </div>
     </div>;
 }
 
-const filterSection = (values, onChangeHandler) => {
+function createFilterAttributeSection(id, desc, options, isDropdown, onChangeHandler, values) {
+    var element = isDropdown ? 
+                createDropdownElement(id, desc, options, onChangeHandler, values) :
+                createCheckboxGroup(id, options, onChangeHandler, values);
+
+    return createFilterAttributeContainer(desc, element);
+}
+
+const filterSection = (values, onChangeHandler, setFieldValue) => {
     return (
         <div className={Style.filterSection}>
             <div className={Style.basicFilters}>
                 {createFilterElement('Cards With Mutual Duos', createCheckbox('mutualDuos', 'Cards With Mutual Duos', onChangeHandler, values), true)}
                 <div className={Style.filterOptions}>
                     {createFilterAttributeSection('characterName', 'Character', characterNames, true, onChangeHandler, values)}
+                    {createFilterAttributeContainer('Style', createTextbox('styleFilter', 'Type Style Here', availableStyles, onChangeHandler, setFieldValue, values), true)}
                     {createFilterAttributeSection('rarity', 'Rarity', rarity, true, onChangeHandler, values)}
                     {createFilterAttributeSection('combatType', 'Combat Type', combatTypes, false, onChangeHandler, values)}
                     {createFilterAttributeSection('duoBuddy', 'Duo Buddy', characterNames, true, onChangeHandler, values)}
@@ -208,6 +229,7 @@ const isCheckboxChecked = (id, values) => {
 const cardMatchesFilter = (card, values) => {
     var result = 
         checkFilterValue('characterName', card.name, values)
+        && checkFilterValue('styleFilter', card.style, values)
         && checkFilterValue('rarity', card.rarity, values)
         && checkFilterValue('duoBuddy', card.duo, values)
         && evaluateCheckboxGroupFilterValue('combatType', 'combatType', combatTypes, card.combatType, values)
@@ -288,10 +310,12 @@ const SearchPage = () => {
     });
 
     const [ filteredCards, setFilteredCards ] = useState([]);
+    const [ formikValues, setFormikValues ] = useState({});
 
-    const newFilteredCards = filterCards(cards, formik.values);
-
-    if (JSON.stringify(filteredCards) !== JSON.stringify(newFilteredCards)){
+    const formikValuesJson = JSON.stringify(formik.values);
+    if (!formik.values.displayToggleFilter && formikValues !== formikValuesJson) {
+        setFormikValues(formikValuesJson);
+        const newFilteredCards = filterCards(cards, formik.values);
         setFilteredCards(newFilteredCards);
     }
 
@@ -305,7 +329,7 @@ const SearchPage = () => {
                     onClose={() => { toggleFilterDrawer(!formik.values.displayToggleFilter, formik.setFieldValue)}}
                 >
                     <form>
-                        {filterSection(formik.values, formik.handleChange)}
+                        {filterSection(formik.values, formik.handleChange, formik.setFieldValue)}
                     </form>
                 </SwipeableDrawer>
 

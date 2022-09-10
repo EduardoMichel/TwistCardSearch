@@ -12,12 +12,10 @@ const spellColumn = (spell) => {
 
 const buddyColumn = (buddy) => {
     return (
-        <td key={buddy.name}>
-            <div>
-                <h4>{buddy.name}</h4>
-                <div>{buddy.desc}</div>
-            </div>
-        </td>
+        <div key={buddy.name}>
+            <h4>{buddy.name}</h4>
+            <div>{buddy.desc}</div>
+        </div>
     );
 }
 
@@ -32,7 +30,11 @@ const row = (card) => {
             <td>{spellColumn(card.spells[0])}</td>
             <td>{spellColumn(card.spells[1])}</td>
             <td>{card.duo}</td>
-            {card.buddies.map(buddy => buddyColumn(buddy))}
+            <td>
+                <div className={Style.buddyContainer} >
+                    {card.buddies.map(buddy => buddyColumn(buddy))}
+                </div>
+            </td>
         </tr>
     );
 };
@@ -40,7 +42,6 @@ const row = (card) => {
 const cardTable = (props) => {
 
     const { filteredCards } = props;
-    console.log('table Rerender');
 
     return (
         <table className={Style.searchTable}>
@@ -51,9 +52,7 @@ const cardTable = (props) => {
                     <th>Spell 1</th>
                     <th>Spell 2</th>
                     <th>DUO</th>
-                    <th>Buddy 1</th>
-                    <th>Buddy 2</th>
-                    <th>Buddy 3</th>
+                    <th>Buddies</th>
                 </tr>
             </thead>
             <tbody>
