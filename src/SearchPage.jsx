@@ -87,9 +87,13 @@ function createDropdownElement(id, desc, options, onChangeHandler, values) {
 }
 
 function createTextbox(id, placeholder, options, onChangeHandler, setFieldValue, values) {
-    var value = getIn(values, id) || '';
+    var value = getIn(values, id) || anyValue;
     var textboxFn = (params) => <TextField {...params} onChange={() => {}} />;
-    var autoComplete = <Autocomplete id={id} name={id} options={options} onChange={(e, value) => setFieldValue(id, value)} value={value} renderInput={textboxFn} />;
+    var autoComplete = <Autocomplete id={id} name={id} options={options} onChange={(e, value) => {
+        if (value === undefined || value === null || value === "") {
+            setFieldValue(id, anyValue);
+        }
+        setFieldValue(id, value);}} value={value} renderInput={textboxFn} />;
     return autoComplete;
 }
 
@@ -164,7 +168,7 @@ const toggleFilterDrawer = (toggle, setFieldValue) => {
 
 const checkFilterValue = (id, cardValue, values) => {
     var formikVal = getIn(values, id);
-    if ((formikVal !== anyValue && formikVal !== undefined)  && cardValue !== formikVal) {
+    if ((formikVal !== anyValue && formikVal !== undefined && formikVal !== null) && cardValue !== formikVal) {
         return false;
     }
     
